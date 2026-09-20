@@ -1,0 +1,173 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('../partials/alerts') %>
+
+  <div class="auth-container" style="max-width: 650px;">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Student Registration</h1>
+        <p>Register your academic profile to participate in campus placement drives</p>
+      </div>
+
+      <form action="/auth/register" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              class="form-control"
+              placeholder="e.g. Ananya Sharma"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">College Email ID *</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-control"
+              placeholder="ananya.sharma@college.edu"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">Password *</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control"
+              placeholder="At least 6 characters"
+              required
+              minlength="6"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password *</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              class="form-control"
+              placeholder="Re-enter password"
+              required
+              minlength="6"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rollNumber">Roll / Registration Number *</label>
+            <input
+              type="text"
+              id="rollNumber"
+              name="rollNumber"
+              class="form-control"
+              placeholder="e.g. CS2026105"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="branch">Engineering Branch *</label>
+            <select id="branch" name="branch" class="form-control" required>
+              <option value="CSE">Computer Science & Engineering (CSE)</option>
+              <option value="IT">Information Technology (IT)</option>
+              <option value="ECE">Electronics & Communication (ECE)</option>
+              <option value="EE">Electrical Engineering (EE)</option>
+              <option value="ME">Mechanical Engineering (ME)</option>
+              <option value="Civil">Civil Engineering</option>
+              <option value="Other">Other Specialized Branch</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cgpa">Current CGPA (0.0 to 10.0) *</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              max="10"
+              id="cgpa"
+              name="cgpa"
+              class="form-control"
+              placeholder="e.g. 8.45"
+              required
+            />
+            <div class="form-helper">Used by eligibility engine to match company cutoffs</div>
+          </div>
+
+          <div class="form-group">
+            <label for="graduationYear">Graduation Year</label>
+            <input
+              type="number"
+              id="graduationYear"
+              name="graduationYear"
+              class="form-control"
+              value="2026"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Contact Number</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              class="form-control"
+              placeholder="+91 9876543210"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="resumeLink">Resume Link (Google Drive / GitHub / Portfolio)</label>
+            <input
+              type="url"
+              id="resumeLink"
+              name="resumeLink"
+              class="form-control"
+              placeholder="https://drive.google.com/... or https://example.com/cv.pdf"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="skills">Technical Skills (Comma separated)</label>
+          <input
+            type="text"
+            id="skills"
+            name="skills"
+            class="form-control"
+            placeholder="e.g. Python, Java, React, SQL, AWS, Git"
+          />
+          <div class="form-helper">Separate skills with commas (e.g., C++, Docker, Node.js)</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1.5rem;">
+          Complete Registration & Sign In
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Already registered? <a href="/auth/login">Sign into your account</a></p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

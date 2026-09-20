@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="main-wrapper" style="text-align: center; padding: 5rem 1rem;">
+  <h1 style="font-size: 5rem; color: var(--danger); margin-bottom: 0.5rem;">500</h1>
+  <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Internal Server Error</h2>
+  <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 2rem;">
+    An unexpected error occurred while processing your request. Please check that MongoDB is running or try again.
+  </p>
+  <% if (typeof error !== 'undefined' && error) { %>
+    <pre style="text-align: left; background: #f1f5f9; padding: 1rem; border-radius: 8px; max-width: 700px; margin: 0 auto 1.5rem; overflow-x: auto; font-size: 0.85rem;"><%= error.stack || error %></pre>
+  <% } %>
+  <a href="/" class="btn btn-primary">Return to Home</a>
+</main>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,219 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('../partials/alerts') %>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Placement Officer Dashboard</h1>
+      <p class="page-subtitle">Overview of campus recruitment drives, student applicants, and placement metrics</p>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="/admin/drives/new" class="btn btn-primary btn-sm">+ Post New Drive</a>
+      <a href="/admin/applications" class="btn btn-secondary btn-sm">Review Applications</a>
+    </div>
+  </div>
+
+  <!-- Key Performance Indicators (KPIs) -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Total Drives</span>
+      <div class="stat-value"><%= stats.totalDrives %></div>
+      <span class="stat-helper"><strong style="color: var(--success);"><%= stats.openDrives %></strong> open &bull; <%= stats.closedDrives %> closed</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Registered Students</span>
+      <div class="stat-value"><%= stats.totalStudents %></div>
+      <span class="stat-helper">Eligible candidate pool</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Total Applications</span>
+      <div class="stat-value" style="color: var(--accent);"><%= stats.totalApplications %></div>
+      <span class="stat-helper">Submissions across all drives</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Placed / Selected</span>
+      <div class="stat-value" style="color: #15803d;"><%= stats.statusCounts.Selected %></div>
+      <span class="stat-helper">Official job offers confirmed</span>
+    </div>
+  </div>
+
+  <!-- Recruitment Funnel Breakdown -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3>Recruitment Funnel Breakdown</h3>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">Current candidate status distribution</span>
+    </div>
+    <div class="card-body">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; text-align: center;">
+        <div style="background: var(--status-applied-bg); padding: 1.25rem 1rem; border-radius: var(--radius-md);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--status-applied-text); text-transform: uppercase;">1. Applied</div>
+          <div style="font-size: 1.85rem; font-weight: 800; color: var(--status-applied-text); margin: 0.25rem 0;"><%= stats.statusCounts.Applied %></div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Awaiting screening</div>
+        </div>
+
+        <div style="background: var(--status-shortlisted-bg); padding: 1.25rem 1rem; border-radius: var(--radius-md);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--status-shortlisted-text); text-transform: uppercase;">2. Shortlisted</div>
+          <div style="font-size: 1.85rem; font-weight: 800; color: var(--status-shortlisted-text); margin: 0.25rem 0;"><%= stats.statusCounts.Shortlisted %></div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Cleared screening</div>
+        </div>
+
+        <div style="background: var(--status-interviewed-bg); padding: 1.25rem 1rem; border-radius: var(--radius-md);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--status-interviewed-text); text-transform: uppercase;">3. Interviewed</div>
+          <div style="font-size: 1.85rem; font-weight: 800; color: var(--status-interviewed-text); margin: 0.25rem 0;"><%= stats.statusCounts.Interviewed %></div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">In technical rounds</div>
+        </div>
+
+        <div style="background: var(--status-selected-bg); padding: 1.25rem 1rem; border-radius: var(--radius-md);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--status-selected-text); text-transform: uppercase;">4. Selected</div>
+          <div style="font-size: 1.85rem; font-weight: 800; color: var(--status-selected-text); margin: 0.25rem 0;"><%= stats.statusCounts.Selected %></div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Offered positions</div>
+        </div>
+
+        <div style="background: var(--status-rejected-bg); padding: 1.25rem 1rem; border-radius: var(--radius-md);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--status-rejected-text); text-transform: uppercase;">5. Rejected</div>
+          <div style="font-size: 1.85rem; font-weight: 800; color: var(--status-rejected-text); margin: 0.25rem 0;"><%= stats.statusCounts.Rejected %></div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Did not clear</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+    <!-- Active Drives Table -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Recent Drives & Applicant Volumes</h2>
+        <a href="/admin/drives" class="btn btn-secondary btn-sm">Manage All Drives &rarr;</a>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        <% if (recentDrives && recentDrives.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Role</th>
+                  <th>Type</th>
+                  <th>Min CGPA</th>
+                  <th>Applicants</th>
+                  <th>Selected</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recentDrives.forEach(drive => { %>
+                  <tr>
+                    <td><strong><%= drive.companyName %></strong></td>
+                    <td><%= drive.roleTitle %></td>
+                    <td>
+                      <span class="badge badge-<%= drive.jobType === 'Internship' ? 'internship' : 'placement' %>">
+                        <%= drive.jobType %>
+                      </span>
+                    </td>
+                    <td><%= drive.minCGPA.toFixed(1) %></td>
+                    <td>
+                      <a href="/admin/applications?driveId=<%= drive._id %>" style="font-weight: bold;">
+                        <%= drive.applicantCount %> candidates
+                      </a>
+                    </td>
+                    <td><strong style="color: #15803d;"><%= drive.selectedCount %></strong></td>
+                    <td>
+                      <span class="badge badge-<%= drive.status === 'Open' ? 'open' : 'closed' %>">
+                        <%= drive.status %>
+                      </span>
+                    </td>
+                    <td>
+                      <div style="display: flex; gap: 0.35rem;">
+                        <a href="/admin/applications?driveId=<%= drive._id %>" class="btn btn-secondary btn-sm" title="View Applicants">
+                          Applicants
+                        </a>
+                        <a href="/admin/drives/<%= drive._id %>/edit" class="btn btn-secondary btn-sm" title="Edit Drive">
+                          Edit
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
+            <p>No drives created yet. Click "+ Post New Drive" to get started.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Recent Candidate Applications Stream -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Recent Candidate Applications</h2>
+        <a href="/admin/applications" class="btn btn-secondary btn-sm">View All Applications &rarr;</a>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        <% if (recentApplications && recentApplications.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Student Candidate</th>
+                  <th>Branch & CGPA</th>
+                  <th>Drive / Company</th>
+                  <th>Applied At</th>
+                  <th>Current Status</th>
+                  <th>Quick Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recentApplications.forEach(app => { %>
+                  <tr>
+                    <td>
+                      <strong><%= app.student ? app.student.name : 'Unknown Student' %></strong>
+                      <div style="font-size: 0.8rem; color: var(--text-muted);"><%= app.student ? app.student.email : '' %></div>
+                    </td>
+                    <td>
+                      <%= app.student ? app.student.branch : '-' %> &bull; 
+                      <strong><%= app.student ? app.student.cgpa.toFixed(2) : '-' %></strong>
+                    </td>
+                    <td>
+                      <strong><%= app.drive ? app.drive.companyName : 'Drive Removed' %></strong>
+                      <div style="font-size: 0.8rem; color: var(--text-muted);"><%= app.drive ? app.drive.roleTitle : '' %></div>
+                    </td>
+                    <td><%= new Date(app.appliedAt).toLocaleDateString() %></td>
+                    <td>
+                      <span class="badge badge-<%= app.status.toLowerCase() %>">
+                        <%= app.status %>
+                      </span>
+                    </td>
+                    <td>
+                      <form action="/admin/applications/<%= app._id %>/status" method="POST" style="display: flex; gap: 0.4rem; align-items: center; margin: 0;">
+                        <select name="status" class="form-control" style="font-size: 0.8rem; padding: 0.3rem 0.5rem; width: auto;" data-auto-submit="true">
+                          <% ['Applied', 'Shortlisted', 'Interviewed', 'Selected', 'Rejected'].forEach(st => { %>
+                            <option value="<%= st %>" <%= app.status === st ? 'selected' : '' %>><%= st %></option>
+                          <% }); %>
+                        </select>
+                      </form>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
+            <p>No applications received yet.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

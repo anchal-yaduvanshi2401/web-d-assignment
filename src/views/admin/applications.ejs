@@ -1,0 +1,156 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('../partials/alerts') %>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Candidate Applications Management</h1>
+      <p class="page-subtitle">Screen candidates, review resumes, and update recruitment round statuses</p>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <form action="/admin/applications" method="GET" class="filter-form">
+      <div class="form-group" style="flex: 2;">
+        <select name="driveId" class="form-control">
+          <option value="">All Drives / Companies</option>
+          <% drives.forEach(drive => { %>
+            <option value="<%= drive._id %>" <%= selectedDriveId === drive._id.toString() ? 'selected' : '' %>>
+              <%= drive.companyName %> - <%= drive.roleTitle %> (<%= drive.jobType %>)
+            </option>
+          <% }); %>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <select name="status" class="form-control">
+          <option value="">All Statuses</option>
+          <% statuses.forEach(st => { %>
+            <option value="<%= st %>" <%= selectedStatus === st ? 'selected' : '' %>><%= st %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <select name="branch" class="form-control">
+          <option value="">All Branches</option>
+          <% ['CSE', 'IT', 'ECE', 'EE', 'ME', 'Civil', 'Other'].forEach(b => { %>
+            <option value="<%= b %>" <%= selectedBranch === b ? 'selected' : '' %>><%= b %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-sm" style="height: 42px;">Filter</button>
+      <a href="/admin/applications" class="btn btn-secondary btn-sm" style="height: 42px;">Reset</a>
+    </form>
+  </div>
+
+  <!-- Applications Table -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Applications List (<%= applications.length %>)</h2>
+    </div>
+
+    <div class="card-body" style="padding: 0;">
+      <% if (applications && applications.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Student Candidate</th>
+                <th>Branch & CGPA</th>
+                <th>Resume & Skills</th>
+                <th>Drive / Company</th>
+                <th>Applied Date</th>
+                <th>Current Status</th>
+                <th style="min-width: 250px;">Update Round & Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% applications.forEach(app => { %>
+                <tr>
+                  <td>
+                    <strong><%= app.student ? app.student.name : 'Unknown' %></strong>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);"><%= app.student ? app.student.email : '' %></div>
+                    <div style="font-size: 0.75rem; color: var(--text-light);">Roll: <%= app.student ? (app.student.rollNumber || 'N/A') : '' %></div>
+                  </td>
+
+                  <td>
+                    <div><strong><%= app.student ? app.student.branch : '-' %></strong></div>
+                    <div style="font-size: 0.85rem; color: var(--primary);">CGPA: <strong><%= app.student ? app.student.cgpa.toFixed(2) : '-' %></strong></div>
+                  </td>
+
+                  <td>
+                    <div style="margin-bottom: 0.4rem;">
+                      <% if (app.student && app.student.resumeLink) { %>
+                        <a href="<%= app.student.resumeLink %>" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">
+                          📄 Resume &nearr;
+                        </a>
+                      <% } else { %>
+                        <span style="font-size: 0.75rem; color: #b91c1c;">No Resume Link</span>
+                      <% } %>
+                    </div>
+                    <div class="skills-tags">
+                      <% if (app.student && app.student.skills && app.student.skills.length > 0) { %>
+                        <% app.student.skills.slice(0, 3).forEach(skill => { %>
+                          <span class="skill-tag" style="font-size: 0.7rem;"><%= skill %></span>
+                        <% }); %>
+                        <% if (app.student.skills.length > 3) { %>
+                          <span style="font-size: 0.7rem; color: var(--text-muted);">+<%= app.student.skills.length - 3 %> more</span>
+                        <% } %>
+                      <% } %>
+                    </div>
+                  </td>
+
+                  <td>
+                    <strong><%= app.drive ? app.drive.companyName : 'Drive Removed' %></strong>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);"><%= app.drive ? app.drive.roleTitle : '' %></div>
+                  </td>
+
+                  <td><%= new Date(app.appliedAt).toLocaleDateString() %></td>
+
+                  <td>
+                    <span class="badge badge-<%= app.status.toLowerCase() %>" style="font-size: 0.8rem;">
+                      <%= app.status %>
+                    </span>
+                  </td>
+
+                  <td>
+                    <form action="/admin/applications/<%= app._id %>/status" method="POST" style="display: flex; flex-direction: column; gap: 0.4rem; margin: 0;">
+                      <div style="display: flex; gap: 0.4rem;">
+                        <select name="status" class="form-control" style="font-size: 0.8rem; padding: 0.35rem 0.5rem;">
+                          <% statuses.forEach(st => { %>
+                            <option value="<%= st %>" <%= app.status === st ? 'selected' : '' %>><%= st %></option>
+                          <% }); %>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm" style="font-size: 0.75rem;">Save</button>
+                      </div>
+                      <input
+                        type="text"
+                        name="adminNotes"
+                        class="form-control"
+                        placeholder="Remarks / interview info..."
+                        value="<%= app.adminNotes || '' %>"
+                        style="font-size: 0.78rem; padding: 0.3rem 0.5rem;"
+                      />
+                    </form>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+          <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No applications matched your filter query.</p>
+          <a href="/admin/applications" class="btn btn-secondary btn-sm">Clear Filters</a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

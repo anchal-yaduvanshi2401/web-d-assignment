@@ -1,0 +1,202 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('../partials/alerts') %>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Student Profile</h1>
+      <p class="page-subtitle">Keep your academic records, skills, and resume link up to date for recruiters</p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+    <!-- Profile Summary Card -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Profile Overview</h3>
+        </div>
+        <div class="card-body" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="text-align: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 0.75rem; font-weight: bold;">
+              <%= student.name.charAt(0).toUpperCase() %>
+            </div>
+            <h3 style="font-size: 1.2rem;"><%= student.name %></h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;"><%= student.email %></p>
+            <span class="badge badge-placement" style="margin-top: 0.5rem;"><%= student.branch %> Department</span>
+          </div>
+
+          <div>
+            <div class="drive-info-row" style="margin-bottom: 0.5rem;">
+              <span>Roll Number:</span>
+              <strong><%= student.rollNumber || 'Not provided' %></strong>
+            </div>
+            <div class="drive-info-row" style="margin-bottom: 0.5rem;">
+              <span>Current CGPA:</span>
+              <strong style="color: var(--primary); font-size: 1.1rem;"><%= student.cgpa.toFixed(2) %></strong>
+            </div>
+            <div class="drive-info-row" style="margin-bottom: 0.5rem;">
+              <span>Batch Year:</span>
+              <strong><%= student.graduationYear %></strong>
+            </div>
+            <div class="drive-info-row" style="margin-bottom: 0.5rem;">
+              <span>Phone:</span>
+              <span><%= student.phone || 'Not provided' %></span>
+            </div>
+          </div>
+
+          <div>
+            <strong style="font-size: 0.85rem; display: block; margin-bottom: 0.4rem;">Skills:</strong>
+            <div class="skills-tags">
+              <% if (student.skills && student.skills.length > 0) { %>
+                <% student.skills.forEach(skill => { %>
+                  <span class="skill-tag"><%= skill %></span>
+                <% }); %>
+              <% } else { %>
+                <span style="color: var(--text-muted); font-size: 0.8rem;">No skills added yet</span>
+              <% } %>
+            </div>
+          </div>
+
+          <div style="margin-top: 0.5rem;">
+            <% if (student.resumeLink) { %>
+              <a href="<%= student.resumeLink %>" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm btn-block">
+                📄 View Current Resume &nearr;
+              </a>
+            <% } else { %>
+              <div style="background-color: #fef2f2; color: #991b1b; padding: 0.6rem; border-radius: var(--radius-sm); font-size: 0.8rem; text-align: center;">
+                ⚠️ No resume link on file. Please add one below so companies can review your profile.
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Update Academic & Professional Information</h3>
+        </div>
+        <div class="card-body">
+          <form action="/student/profile" method="POST">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  class="form-control"
+                  value="<%= student.name %>"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="rollNumber">Roll / Registration Number *</label>
+                <input
+                  type="text"
+                  id="rollNumber"
+                  name="rollNumber"
+                  class="form-control"
+                  value="<%= student.rollNumber %>"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="branch">Engineering Department / Branch *</label>
+                <select id="branch" name="branch" class="form-control" required>
+                  <% ['CSE', 'IT', 'ECE', 'EE', 'ME', 'Civil', 'Other'].forEach(branch => { %>
+                    <option value="<%= branch %>" <%= student.branch === branch ? 'selected' : '' %>>
+                      <%= branch %>
+                    </option>
+                  <% }); %>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="cgpa">Cumulative CGPA (0.00 - 10.00) *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="10"
+                  id="cgpa"
+                  name="cgpa"
+                  class="form-control"
+                  value="<%= student.cgpa %>"
+                  required
+                />
+                <div class="form-helper">Crucial: Minimum CGPA determines eligibility for drives.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="graduationYear">Graduation Year</label>
+                <input
+                  type="number"
+                  id="graduationYear"
+                  name="graduationYear"
+                  class="form-control"
+                  value="<%= student.graduationYear %>"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  class="form-control"
+                  value="<%= student.phone %>"
+                  placeholder="+91 9876543210"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="resumeLink">Resume / CV Link (Google Drive / GitHub / Portfolio URL)</label>
+              <input
+                type="url"
+                id="resumeLink"
+                name="resumeLink"
+                class="form-control"
+                value="<%= student.resumeLink %>"
+                placeholder="https://drive.google.com/file/d/.../view?usp=sharing"
+              />
+              <div class="form-helper">Make sure permissions are set to "Anyone with the link can view".</div>
+            </div>
+
+            <div class="form-group">
+              <label for="skills">Key Technical Skills (Comma separated)</label>
+              <input
+                type="text"
+                id="skills"
+                name="skills"
+                class="form-control"
+                value="<%= student.skills ? student.skills.join(', ') : '' %>"
+                placeholder="e.g. Java, Python, C++, React, Express, MongoDB, Machine Learning"
+              />
+              <div class="form-helper">Enter comma-separated keywords (e.g. C++, Node.js, SQL).</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+              Save Profile Changes
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

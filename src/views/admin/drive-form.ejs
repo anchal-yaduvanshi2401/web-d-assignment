@@ -1,0 +1,194 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('../partials/alerts') %>
+
+  <div style="margin-bottom: 1.5rem;">
+    <a href="/admin/drives" class="btn btn-secondary btn-sm">&larr; Back to Manage Drives</a>
+  </div>
+
+  <div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div class="card-header">
+      <h2><%= isEdit ? 'Edit Placement Drive' : 'Create New Placement / Internship Drive' %></h2>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">
+        <%= isEdit ? `Modifying ${drive.companyName}` : 'Fill in the drive criteria and qualifications' %>
+      </span>
+    </div>
+
+    <div class="card-body">
+      <form action="<%= isEdit ? `/admin/drives/${drive._id}/edit` : '/admin/drives/new' %>" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="companyName">Company / Organization Name *</label>
+            <input
+              type="text"
+              id="companyName"
+              name="companyName"
+              class="form-control"
+              placeholder="e.g. Google, Microsoft, Infosys"
+              value="<%= isEdit ? drive.companyName : '' %>"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="roleTitle">Job / Internship Role Title *</label>
+            <input
+              type="text"
+              id="roleTitle"
+              name="roleTitle"
+              class="form-control"
+              placeholder="e.g. Software Development Engineer, Data Analyst Intern"
+              value="<%= isEdit ? drive.roleTitle : '' %>"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="jobType">Opportunity Type *</label>
+            <select id="jobType" name="jobType" class="form-control" required>
+              <option value="Full-time Placement" <%= isEdit && drive.jobType === 'Full-time Placement' ? 'selected' : '' %>>Full-time Placement</option>
+              <option value="Internship" <%= isEdit && drive.jobType === 'Internship' ? 'selected' : '' %>>Internship</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="packageOrStipend">Compensation Package / Stipend *</label>
+            <input
+              type="text"
+              id="packageOrStipend"
+              name="packageOrStipend"
+              class="form-control"
+              placeholder="e.g. 14.5 LPA or ₹50,000 / month"
+              value="<%= isEdit ? drive.packageOrStipend : '' %>"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Job Description & Role Responsibilities *</label>
+          <textarea
+            id="description"
+            name="description"
+            class="form-control"
+            rows="5"
+            placeholder="Outline candidate responsibilities, expectations, technical requirements, and interview rounds..."
+            required
+          ><%= isEdit ? drive.description : '' %></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="minCGPA">Minimum Cutoff CGPA (0.00 - 10.00) *</label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="10"
+              id="minCGPA"
+              name="minCGPA"
+              class="form-control"
+              placeholder="e.g. 7.5"
+              value="<%= isEdit ? drive.minCGPA : '6.0' %>"
+              required
+            />
+            <div class="form-helper">Students with CGPA below this cutoff will be marked ineligible.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="location">Work Location *</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              class="form-control"
+              placeholder="e.g. Bengaluru, Hyderabad, Hybrid, Remote"
+              value="<%= isEdit ? drive.location : 'On-Campus / Hybrid' %>"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Eligible Engineering Branches *</label>
+          <div class="checkbox-group">
+            <% const currentBranches = isEdit && drive.eligibleBranches ? drive.eligibleBranches : ['All']; %>
+            <% branches.forEach(branch => { %>
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="eligibleBranches"
+                  value="<%= branch %>"
+                  <%= currentBranches.includes(branch) ? 'checked' : '' %>
+                />
+                <%= branch %>
+              </label>
+            <% }); %>
+          </div>
+          <div class="form-helper">Select 'All' to allow students from any engineering department.</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="deadline">Application Deadline *</label>
+            <% 
+              let deadlineVal = '';
+              if (isEdit && drive.deadline) {
+                deadlineVal = new Date(drive.deadline).toISOString().split('T')[0];
+              } else {
+                const twoWeeks = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+                deadlineVal = twoWeeks.toISOString().split('T')[0];
+              }
+            %>
+            <input
+              type="date"
+              id="deadline"
+              name="deadline"
+              class="form-control"
+              value="<%= deadlineVal %>"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="driveDate">Drive / Interview Date (Optional)</label>
+            <% 
+              let driveDateVal = '';
+              if (isEdit && drive.driveDate) {
+                driveDateVal = new Date(drive.driveDate).toISOString().split('T')[0];
+              }
+            %>
+            <input
+              type="date"
+              id="driveDate"
+              name="driveDate"
+              class="form-control"
+              value="<%= driveDateVal %>"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Drive Status</label>
+          <select id="status" name="status" class="form-control">
+            <option value="Open" <%= isEdit && drive.status === 'Open' ? 'selected' : '' %>>Open (Accepting Applications)</option>
+            <option value="Closed" <%= isEdit && drive.status === 'Closed' ? 'selected' : '' %>>Closed (Applications Ended)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <a href="/admin/drives" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary">
+            <%= isEdit ? 'Save Drive Changes' : 'Create Drive' %>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

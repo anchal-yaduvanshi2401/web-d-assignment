@@ -1,0 +1,71 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('../partials/alerts') %>
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Welcome Back</h1>
+        <p>Sign in to access your student or placement officer account</p>
+      </div>
+
+      <form action="/auth/login" method="POST">
+        <div class="form-group">
+          <label for="email">Institutional / Registered Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-control"
+            placeholder="e.g. rahul.verma@college.edu"
+            required
+            autofocus
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
+          Sign In
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>New student? <a href="/auth/register">Create your student profile</a></p>
+      </div>
+
+      <!-- Quick Demo Credentials for Viva / Testing -->
+      <div style="margin-top: 1.5rem; padding: 1rem; background-color: #f1f5f9; border-radius: var(--radius-sm); font-size: 0.8rem; border: 1px dashed #cbd5e1;">
+        <strong>💡 Viva Demo Credentials:</strong>
+        <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem;">
+          <div>
+            <strong>Placement Officer (Admin):</strong>
+            <code>admin@placement.edu</code> / <code>AdminPassword123</code>
+          </div>
+          <div>
+            <strong>Student (CSE, 8.8 CGPA):</strong>
+            <code>rahul.verma@college.edu</code> / <code>Password123</code>
+          </div>
+          <div>
+            <strong>Student (ECE, 7.4 CGPA):</strong>
+            <code>priya.nair@college.edu</code> / <code>Password123</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

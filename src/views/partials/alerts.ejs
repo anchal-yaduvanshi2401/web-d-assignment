@@ -1,0 +1,39 @@
+<% if (typeof messages !== 'undefined') { %>
+  <div class="alerts-container">
+    <% if (messages.success && messages.success.length > 0) { %>
+      <% messages.success.forEach(function(msg) { %>
+        <div class="alert alert-success">
+          <span>✓ <%= msg %></span>
+          <button type="button" class="alert-close" aria-label="Close">&times;</button>
+        </div>
+      <% }); %>
+    <% } %>
+
+    <% if (messages.error && messages.error.length > 0) { %>
+      <% messages.error.forEach(function(msg) { %>
+        <div class="alert alert-error">
+          <span>⚠️ <%= msg %></span>
+          <button type="button" class="alert-close" aria-label="Close">&times;</button>
+        </div>
+      <% }); %>
+    <% } %>
+
+    <% if (messages.warning && messages.warning.length > 0) { %>
+      <% messages.warning.forEach(function(msg) { %>
+        <div class="alert alert-warning">
+          <span>ℹ️ <%= msg %></span>
+          <button type="button" class="alert-close" aria-label="Close">&times;</button>
+        </div>
+      <% }); %>
+    <% } %>
+
+    <% if (messages.info && messages.info.length > 0) { %>
+      <% messages.info.forEach(function(msg) { %>
+        <div class="alert alert-info">
+          <span>ℹ️ <%= msg %></span>
+          <button type="button" class="alert-close" aria-label="Close">&times;</button>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+<% } %>

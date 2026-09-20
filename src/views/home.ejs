@@ -1,0 +1,133 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('partials/alerts') %>
+
+  <section class="hero">
+    <h1>Accelerate Your Career with Campus Placements</h1>
+    <p>A unified platform for students to explore top recruitment & internship drives, verify eligibility instantly, and track selection rounds in real time.</p>
+    
+    <div class="hero-cta">
+      <% if (!currentUser) { %>
+        <a href="/auth/register" class="btn btn-primary" style="background-color: #ffffff; color: #1e3a8a;">Student Registration</a>
+        <a href="/auth/login" class="btn btn-secondary" style="background-color: rgba(255,255,255,0.15); color: #ffffff; border-color: rgba(255,255,255,0.4);">Sign In</a>
+      <% } else if (currentUser.role === 'admin') { %>
+        <a href="/admin/dashboard" class="btn btn-primary" style="background-color: #ffffff; color: #1e3a8a;">Go to Admin Dashboard</a>
+        <a href="/admin/drives/new" class="btn btn-secondary" style="background-color: rgba(255,255,255,0.15); color: #ffffff; border-color: rgba(255,255,255,0.4);">+ Post New Drive</a>
+      <% } else { %>
+        <a href="/student/dashboard" class="btn btn-primary" style="background-color: #ffffff; color: #1e3a8a;">Go to Student Dashboard</a>
+        <a href="/student/drives" class="btn btn-secondary" style="background-color: rgba(255,255,255,0.15); color: #ffffff; border-color: rgba(255,255,255,0.4);">Browse Open Drives</a>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- Live Portal Counters -->
+  <section class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Active Drives</span>
+      <div class="stat-value"><%= stats.totalDrives %></div>
+      <span class="stat-helper">Recruiting top campus talent</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Registered Students</span>
+      <div class="stat-value"><%= stats.totalStudents %></div>
+      <span class="stat-helper">Across engineering departments</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Total Selections</span>
+      <div class="stat-value"><%= stats.totalSelected %></div>
+      <span class="stat-helper">Offers released to candidates</span>
+    </div>
+  </section>
+
+  <!-- Key Features -->
+  <section>
+    <div class="page-header" style="margin-bottom: 1rem;">
+      <h2 class="page-title" style="font-size: 1.4rem;">Why Use Our Placement System?</h2>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-icon">⚡</div>
+        <h3>Automated Eligibility Engine</h3>
+        <p>Never wonder if you qualify. The system compares your CGPA and branch against company criteria automatically.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon">🛡️</div>
+        <h3>Zero Duplicate Applications</h3>
+        <p>Built-in database constraints prevent accidental double submissions and ensure clean candidate pipelines.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon">📊</div>
+        <h3>Live Status Tracking</h3>
+        <p>Monitor your progress from Applied, Shortlisted, Interviewed, to final Selection with feedback notes.</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon">👔</div>
+        <h3>Placement Officer Portal</h3>
+        <p>Comprehensive administrative tools to manage drives, filter student profiles, and update recruitment rounds.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Active Drives -->
+  <% if (featuredDrives && featuredDrives.length > 0) { %>
+    <section style="margin-top: 2rem;">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title" style="font-size: 1.4rem;">Featured Recruitment Drives</h2>
+          <p class="page-subtitle">Recent openings from premier hiring partners</p>
+        </div>
+        <% if (currentUser && currentUser.role === 'student') { %>
+          <a href="/student/drives" class="btn btn-secondary btn-sm">View All Drives &rarr;</a>
+        <% } %>
+      </div>
+
+      <div class="drives-grid">
+        <% featuredDrives.forEach(drive => { %>
+          <div class="drive-card">
+            <div class="drive-card-header">
+              <span class="badge badge-<%= drive.jobType === 'Internship' ? 'internship' : 'placement' %>">
+                <%= drive.jobType %>
+              </span>
+              <h3 class="company-title" style="margin-top: 0.5rem;"><%= drive.companyName %></h3>
+              <p class="role-subtitle"><%= drive.roleTitle %></p>
+            </div>
+            <div class="drive-card-body">
+              <div class="drive-info-row">
+                <span>Package / Stipend:</span>
+                <strong><%= drive.packageOrStipend %></strong>
+              </div>
+              <div class="drive-info-row">
+                <span>Min CGPA:</span>
+                <strong><%= drive.minCGPA.toFixed(1) %></strong>
+              </div>
+              <div class="drive-info-row">
+                <span>Eligible Branches:</span>
+                <span><%= drive.eligibleBranches.join(', ') %></span>
+              </div>
+              <div class="drive-info-row">
+                <span>Deadline:</span>
+                <strong><%= new Date(drive.deadline).toLocaleDateString() %></strong>
+              </div>
+            </div>
+            <div class="drive-card-footer">
+              <span class="badge badge-open">Open for Application</span>
+              <% if (currentUser && currentUser.role === 'student') { %>
+                <a href="/student/drives/<%= drive._id %>" class="btn btn-primary btn-sm">View & Apply</a>
+              <% } else if (!currentUser) { %>
+                <a href="/auth/login" class="btn btn-secondary btn-sm">Login to Apply</a>
+              <% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </section>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

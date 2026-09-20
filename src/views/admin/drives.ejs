@@ -1,0 +1,105 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('../partials/alerts') %>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Manage Placement & Internship Drives</h1>
+      <p class="page-subtitle">Configure company criteria, job roles, eligibility rules, and application windows</p>
+    </div>
+    <a href="/admin/drives/new" class="btn btn-primary">+ Post New Drive</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>All Drives (<%= drives.length %>)</h2>
+    </div>
+
+    <div class="card-body" style="padding: 0;">
+      <% if (drives && drives.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Company & Role</th>
+                <th>Type</th>
+                <th>Compensation</th>
+                <th>Cutoff CGPA</th>
+                <th>Eligible Branches</th>
+                <th>Deadline</th>
+                <th>Applicants</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% drives.forEach(drive => { %>
+                <tr>
+                  <td>
+                    <strong><%= drive.companyName %></strong>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);"><%= drive.roleTitle %></div>
+                  </td>
+                  <td>
+                    <span class="badge badge-<%= drive.jobType === 'Internship' ? 'internship' : 'placement' %>">
+                      <%= drive.jobType %>
+                    </span>
+                  </td>
+                  <td><%= drive.packageOrStipend %></td>
+                  <td><strong><%= drive.minCGPA.toFixed(1) %></strong></td>
+                  <td><%= drive.eligibleBranches.join(', ') %></td>
+                  <td><%= new Date(drive.deadline).toLocaleDateString() %></td>
+                  <td>
+                    <a href="/admin/applications?driveId=<%= drive._id %>" style="font-weight: 700; color: var(--accent);">
+                      <%= drive.applicantCount %> Applicants
+                    </a>
+                    <% if (drive.selectedCount > 0) { %>
+                      <div style="font-size: 0.75rem; color: #15803d; font-weight: 600;">
+                        (<%= drive.selectedCount %> Selected)
+                      </div>
+                    <% } %>
+                  </td>
+                  <td>
+                    <span class="badge badge-<%= drive.status === 'Open' ? 'open' : 'closed' %>">
+                      <%= drive.status %>
+                    </span>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 0.35rem; align-items: center;">
+                      <a href="/admin/applications?driveId=<%= drive._id %>" class="btn btn-secondary btn-sm" title="Review Applications">
+                        Applicants
+                      </a>
+                      <a href="/admin/drives/<%= drive._id %>/edit" class="btn btn-secondary btn-sm" title="Edit Drive">
+                        Edit
+                      </a>
+                      <form
+                        action="/admin/drives/<%= drive._id %>/delete"
+                        method="POST"
+                        class="form-delete-confirm"
+                        data-company="<%= drive.companyName %> (<%= drive.roleTitle %>)"
+                        style="margin: 0;"
+                      >
+                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Drive">
+                          Delete
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+          <p style="font-size: 1.15rem; margin-bottom: 0.5rem;">No recruitment drives posted yet.</p>
+          <p style="font-size: 0.9rem; margin-bottom: 1.25rem;">Create your first company drive to start collecting student applications.</p>
+          <a href="/admin/drives/new" class="btn btn-primary">+ Post New Drive</a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

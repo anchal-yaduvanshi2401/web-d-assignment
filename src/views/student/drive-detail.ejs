@@ -1,0 +1,152 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('../partials/alerts') %>
+
+  <div style="margin-bottom: 1.5rem;">
+    <a href="/student/drives" class="btn btn-secondary btn-sm">&larr; Back to All Drives</a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <!-- Main Drive Details -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <span class="badge badge-<%= drive.jobType === 'Internship' ? 'internship' : 'placement' %>">
+              <%= drive.jobType %>
+            </span>
+            <h1 style="font-size: 1.6rem; margin-top: 0.5rem; color: var(--text-main);"><%= drive.companyName %></h1>
+            <p style="color: var(--accent); font-weight: 600; font-size: 1.1rem;"><%= drive.roleTitle %></p>
+          </div>
+          <div>
+            <span class="badge badge-<%= drive.status === 'Open' ? 'open' : 'closed' %>" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+              Status: <%= drive.status %>
+            </span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <h3 style="font-size: 1.05rem; margin-bottom: 0.75rem;">About the Opportunity</h3>
+          <p style="white-space: pre-line; color: #334155; line-height: 1.7; margin-bottom: 1.5rem;">
+            <%= drive.description %>
+          </p>
+
+          <h3 style="font-size: 1.05rem; margin-bottom: 0.75rem;">Drive & Compensation Overview</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold;">Package / Stipend</span>
+              <div style="font-size: 1.25rem; font-weight: 700; color: var(--primary); margin-top: 0.25rem;"><%= drive.packageOrStipend %></div>
+            </div>
+
+            <div style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold;">Work Location</span>
+              <div style="font-size: 1.05rem; font-weight: 600; margin-top: 0.25rem;"><%= drive.location %></div>
+            </div>
+
+            <div style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold;">Deadline</span>
+              <div style="font-size: 1.05rem; font-weight: 600; margin-top: 0.25rem; color: #b91c1c;">
+                <%= new Date(drive.deadline).toLocaleDateString() %>
+              </div>
+            </div>
+
+            <div style="background: var(--bg); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold;">Drive / Interview Date</span>
+              <div style="font-size: 1.05rem; font-weight: 600; margin-top: 0.25rem;">
+                <%= drive.driveDate ? new Date(drive.driveDate).toLocaleDateString() : 'To be announced' %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Eligibility & Application Panel -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Eligibility Verification</h3>
+        </div>
+        <div class="card-body">
+          <div style="margin-bottom: 1.25rem;">
+            <div class="drive-info-row" style="margin-bottom: 0.4rem;">
+              <span>Min CGPA Required:</span>
+              <strong><%= drive.minCGPA.toFixed(2) %></strong>
+            </div>
+            <div class="drive-info-row" style="margin-bottom: 0.4rem;">
+              <span>Your Current CGPA:</span>
+              <strong style="<%= student.cgpa >= drive.minCGPA ? 'color: var(--success);' : 'color: var(--danger);' %>">
+                <%= student.cgpa.toFixed(2) %>
+              </strong>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 0.75rem 0;">
+
+            <div class="drive-info-row" style="margin-bottom: 0.4rem;">
+              <span>Eligible Branches:</span>
+              <span><strong><%= drive.eligibleBranches.join(', ') %></strong></span>
+            </div>
+            <div class="drive-info-row">
+              <span>Your Branch:</span>
+              <strong style="<%= (drive.eligibleBranches.includes('All') || drive.eligibleBranches.includes(student.branch)) ? 'color: var(--success);' : 'color: var(--danger);' %>">
+                <%= student.branch %>
+              </strong>
+            </div>
+          </div>
+
+          <!-- Evaluation Outcome -->
+          <% if (application) { %>
+            <div style="background: #e0f2fe; border: 1px solid #bae6fd; padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+              <strong style="color: #0369a1; display: block; margin-bottom: 0.35rem;">✓ Application Submitted</strong>
+              <p style="font-size: 0.85rem; color: #0c4a6e; margin-bottom: 0.5rem;">
+                You applied on <%= new Date(application.appliedAt).toLocaleDateString() %>.
+              </p>
+              <div>
+                <span class="badge badge-<%= application.status.toLowerCase() %>" style="font-size: 0.85rem;">
+                  Status: <%= application.status %>
+                </span>
+              </div>
+              <% if (application.adminNotes) { %>
+                <div style="margin-top: 0.75rem; font-size: 0.82rem; color: #334155;">
+                  <strong>Placement Officer Note:</strong>
+                  <p><%= application.adminNotes %></p>
+                </div>
+              <% } %>
+            </div>
+            <a href="/student/applications" class="btn btn-secondary btn-block">View in My Applications</a>
+          <% } else if (eligibility.canApply) { %>
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+              <strong style="color: #15803d; display: block; margin-bottom: 0.35rem;">✓ You Meet All Criteria!</strong>
+              <p style="font-size: 0.85rem; color: #166534;">
+                Your CGPA and academic branch qualify for this recruitment drive.
+              </p>
+            </div>
+
+            <form action="/student/drives/<%= drive._id %>/apply" method="POST">
+              <button type="submit" class="btn btn-success btn-block" style="font-size: 1rem; padding: 0.75rem;">
+                Submit Application Now &rarr;
+              </button>
+            </form>
+          <% } else { %>
+            <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+              <strong style="color: #991b1b; display: block; margin-bottom: 0.35rem;">✕ Ineligible to Apply</strong>
+              <ul style="font-size: 0.85rem; color: #7f1d1d; margin-left: 1.25rem; margin-top: 0.35rem;">
+                <% eligibility.reasons.forEach(r => { %>
+                  <li><%= r %></li>
+                <% }); %>
+              </ul>
+            </div>
+
+            <button class="btn btn-secondary btn-block" disabled>
+              Application Restricted
+            </button>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

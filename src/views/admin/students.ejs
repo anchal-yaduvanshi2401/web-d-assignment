@@ -1,0 +1,126 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<main class="main-wrapper">
+  <%- include('../partials/alerts') %>
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Registered Students Directory</h1>
+      <p class="page-subtitle">Search and filter students across academic departments, CGPA cutoffs, and skills</p>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <form action="/admin/students" method="GET" class="filter-form">
+      <div class="form-group">
+        <label for="branchFilter" style="font-size: 0.8rem; margin-bottom: 0.2rem;">Department / Branch</label>
+        <select id="branchFilter" name="branch" class="form-control">
+          <% branches.forEach(b => { %>
+            <option value="<%= b %>" <%= selectedBranch === b ? 'selected' : '' %>><%= b %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="minCGPA" style="font-size: 0.8rem; margin-bottom: 0.2rem;">Minimum CGPA Filter</label>
+        <input
+          type="number"
+          step="0.1"
+          min="0"
+          max="10"
+          id="minCGPA"
+          name="minCGPA"
+          class="form-control"
+          placeholder="e.g. 7.5"
+          value="<%= selectedMinCGPA %>"
+        />
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; align-items: flex-end; margin-bottom: 0;">
+        <button type="submit" class="btn btn-primary btn-sm" style="height: 42px;">Filter Students</button>
+        <a href="/admin/students" class="btn btn-secondary btn-sm" style="height: 42px;">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Students List (<%= students.length %>)</h2>
+    </div>
+
+    <div class="card-body" style="padding: 0;">
+      <% if (students && students.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Roll Number</th>
+                <th>Branch</th>
+                <th>CGPA</th>
+                <th>Skills Profile</th>
+                <th>Resume</th>
+                <th>Applications</th>
+                <th>Offers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% students.forEach(student => { %>
+                <tr>
+                  <td>
+                    <strong><%= student.name %></strong>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);"><%= student.email %></div>
+                  </td>
+                  <td><strong><%= student.rollNumber || '-' %></strong></td>
+                  <td><%= student.branch %></td>
+                  <td>
+                    <strong style="color: var(--primary); font-size: 1rem;"><%= student.cgpa.toFixed(2) %></strong>
+                  </td>
+                  <td>
+                    <div class="skills-tags">
+                      <% if (student.skills && student.skills.length > 0) { %>
+                        <% student.skills.forEach(skill => { %>
+                          <span class="skill-tag"><%= skill %></span>
+                        <% }); %>
+                      <% } else { %>
+                        <span style="color: var(--text-muted); font-size: 0.75rem;">None listed</span>
+                      <% } %>
+                    </div>
+                  </td>
+                  <td>
+                    <% if (student.resumeLink) { %>
+                      <a href="<%= student.resumeLink %>" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">
+                        📄 Resume &nearr;
+                      </a>
+                    <% } else { %>
+                      <span style="color: var(--text-light); font-size: 0.75rem;">Not added</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <span class="badge badge-applied"><%= student.appliedCount %> Applied</span>
+                  </td>
+                  <td>
+                    <% if (student.selectedCount > 0) { %>
+                      <span class="badge badge-selected"><%= student.selectedCount %> Placed 🎉</span>
+                    <% } else { %>
+                      <span style="color: var(--text-light); font-size: 0.8rem;">0 Offers</span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
+          <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No students found matching the selected filter.</p>
+          <a href="/admin/students" class="btn btn-secondary btn-sm">Reset Filters</a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
